@@ -1,5 +1,6 @@
 --The Dataset is divided into disks, so when you want to get data, you have to call its dicks location.
 --P1.Calculate total visit, pageview, transaction for Jan, Feb and March 2017 (order by month)
+
 WITH raw AS(
   SELECT PARSE_DATETIME('%Y%m%d',date) AS datetime_column, totals.visits,totals.pageviews,totals.transactions
   FROM `bigquery-public-data.google_analytics_sample.ga_sessions_2017*`),
