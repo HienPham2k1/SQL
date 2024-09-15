@@ -1,14 +1,16 @@
 # Ecommerce Dataset
 ## Explore the dataset 
 - Để có thể hiểu hơn về các câu lệnh querry bên dưới, ta có thể xem xét cấu trúc ban đầu của tập dữ liệu. 
-
+![image](https://github.com/user-attachments/assets/020ee3d4-921b-455f-a585-ed6957a9481f)
 - Thấy được rằng tập dữ liệu chứa các tệp dữ liệu nhỏ bên trong, hãy cùng xem cấu trúc của dữ liệu: 
-<img src="https://github.com/user-attachments/assets/5e1da5e3-85ad-4c9e-b3b6-5f89e48e4370" alt="..." width="800" />
+<img src="https://github.com/user-attachments/assets/5e1da5e3-85ad-4c9e-b3b6-5f89e48e4370" alt="..." width="800" />                                                                                              ---
+
 - Thấy được rằng cấu trúc của tập dữ liệu là hình số 3, vậy nên để có thể lấy được những dữ liệu phía bên trong của các tập lớn thì ta phải gọi các tập lớn ra trước. Sử dụng câu lệnh Unnest. Cách thức thực hiện:
 1.	Gọi dữ liệu từ nhóm dữ liệu của  Google Analysis 
 2.	Sử dụng Unnest để phân tách dữ liệu 
 3.	Tạo lập CTE, sử dụng Join, Group by,  Case when để tính toán 
 - Dưới đây là một số những yêu cầu để có thể phân tích tập dữ liệu
+
 Query 01: Calculate total visit, pageview, transaction for Jan, Feb and March 2017 (order by month)
  
 Query 02: Bounce rate per traffic source in July 2017 (Bounce_rate = num_bounce/total_visit) (order by total_visit DESC)
@@ -22,7 +24,6 @@ Query 05: Average number of transactions per user that made a purchase in July 2
 Query 06: Average amount of money spent per session. Only include purchaser data in July 2017
  
 Query 07: Other products purchased by customers who purchased product "YouTube Men's Vintage Henley" in July 2017. Output should show product name and the quantity was ordered.
- 
 
 Query 08: Calculate cohort map from product view to addtocart to purchase in Jan, Feb and March 2017. For example, 100% product view then 40% add_to_cart and 10% purchase.
 Add_to_cart_rate = number product add to cart/number product view. Purchase_rate = number product purchase/number product view. The output should be calculated in product level.
