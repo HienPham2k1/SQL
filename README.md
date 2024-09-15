@@ -1,9 +1,12 @@
 # Ecommerce Dataset
 ## Explore the dataset 
 - Để có thể hiểu hơn về các câu lệnh querry bên dưới, ta có thể xem xét cấu trúc ban đầu của tập dữ liệu. 
-![image](https://github.com/user-attachments/assets/020ee3d4-921b-455f-a585-ed6957a9481f)
+![image](https://github.com/user-attachments/assets/08bc96ab-1f9a-4dd1-a543-837565d136d2)
+
+
 - Thấy được rằng tập dữ liệu chứa các tệp dữ liệu nhỏ bên trong, hãy cùng xem cấu trúc của dữ liệu: 
-<img src="https://github.com/user-attachments/assets/5e1da5e3-85ad-4c9e-b3b6-5f89e48e4370" alt="..." width="800" />                                                                                              ---
+![image](https://github.com/user-attachments/assets/d9d95a53-b5d4-4c7c-abc1-60d841441773)
+                                                                                          ---
 
 - Thấy được rằng cấu trúc của tập dữ liệu là hình số 3, vậy nên để có thể lấy được những dữ liệu phía bên trong của các tập lớn thì ta phải gọi các tập lớn ra trước. Sử dụng câu lệnh Unnest. Cách thức thực hiện:
 1.	Gọi dữ liệu từ nhóm dữ liệu của  Google Analysis 
@@ -27,7 +30,9 @@ Query 07: Other products purchased by customers who purchased product "YouTube M
 
 Query 08: Calculate cohort map from product view to addtocart to purchase in Jan, Feb and March 2017. For example, 100% product view then 40% add_to_cart and 10% purchase.
 Add_to_cart_rate = number product add to cart/number product view. Purchase_rate = number product purchase/number product view. The output should be calculated in product level.
-<img src="https://github.com/user-attachments/assets/6a807236-2d7a-4ddf-bb6f-60920edd282d" alt="..." width="800" /> 
+
+![image](https://github.com/user-attachments/assets/b10d3ad9-db8f-4396-b7b7-17d98b68b36e)
+
 ## Mục đích thực hiện:
 Sử dụng các câu lệnh trong SQL để tổng hợp dữ liệu, biết được tổng số lượng lượt xem, tổng số lượng giao dịch qua từng tháng. Tính được trung bình lượt truy cập mỗi tháng, trung bình lượt giao dịch mỗi tháng. Xây dựng Cohort map, xem được tỉ lệ mua hàng của khách hàng qua từng thời kỳ 
 ## Insight:
@@ -57,7 +62,8 @@ Tính toán được tổng số lượng sản phẩm, tổng doanh thu cũng n
 ## Retention Rate:
 Để tạo dựng được bảng Cohort từ câu số 5 ta cần có cái nhìn tổng quan về kết quả mình muốn tạo ra. Kết quả cuối cùng sẽ có hình dáng giống như hình tam giác bên dưới
 
-<img src="https://github.com/user-attachments/assets/2a128a04-d198-4238-8322-9f2489d8b6d3" alt="..." width="800" /> 
+![image](https://github.com/user-attachments/assets/844ba668-730d-466f-b0b4-913b31b99bfa)
+
 
 Chúng ta cần tính toán số lượng khách hàng mua lần đầu tại từng tháng, sau mỗi tháng còn lại bao nhiêu khách hàng vẫn còn mua hàng. Cách làm chi tiết được viết tại đây: [Bicycle Manufacture](https://github.com/HienPham2k1/SQL/blob/main/Bicycle%20Manufacture.sql)
 
