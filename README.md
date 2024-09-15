@@ -1,9 +1,9 @@
 # Ecommerce Dataset
 ## Explore the dataset 
 - Để có thể hiểu hơn về các câu lệnh querry bên dưới, ta có thể xem xét cấu trúc ban đầu của tập dữ liệu. 
-<img src="https://github.com/user-attachments/assets/020ee3d4-921b-455f-a585-ed6957a9481f" alt="github.com/user-attachments/assets/020ee3d4-921b-455f-a585-ed6957a9481f" width="250" />
+
 - Thấy được rằng tập dữ liệu chứa các tệp dữ liệu nhỏ bên trong, hãy cùng xem cấu trúc của dữ liệu: 
-![image](https://github.com/user-attachments/assets/5e1da5e3-85ad-4c9e-b3b6-5f89e48e4370)
+<img src="https://github.com/user-attachments/assets/5e1da5e3-85ad-4c9e-b3b6-5f89e48e4370" alt="..." width="800" />
 - Thấy được rằng cấu trúc của tập dữ liệu là hình số 3, vậy nên để có thể lấy được những dữ liệu phía bên trong của các tập lớn thì ta phải gọi các tập lớn ra trước. Sử dụng câu lệnh Unnest. Cách thức thực hiện:
 1.	Gọi dữ liệu từ nhóm dữ liệu của  Google Analysis 
 2.	Sử dụng Unnest để phân tách dữ liệu 
