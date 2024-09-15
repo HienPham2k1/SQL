@@ -58,7 +58,7 @@ Tính toán được tổng số lượng sản phẩm, tổng doanh thu cũng n
 
 <img src="https://github.com/user-attachments/assets/2a128a04-d198-4238-8322-9f2489d8b6d3" alt="..." width="800" /> 
 
-Chúng ta cần tính toán số lượng khách hàng mua lần đầu tại từng tháng, sau mỗi tháng còn lại bao nhiêu khách hàng vẫn còn mua hàng. Cách làm chi tiết được viết tại đây: ( )
+Chúng ta cần tính toán số lượng khách hàng mua lần đầu tại từng tháng, sau mỗi tháng còn lại bao nhiêu khách hàng vẫn còn mua hàng. Cách làm chi tiết được viết tại đây: [Query5](https://github.com/HienPham2k1/SQL/blob/main/Bicycle%20Manufacture.sql)
 
 
 
