@@ -56,7 +56,9 @@ Tính toán được tổng số lượng sản phẩm, tổng doanh thu cũng n
 ## Retention Rate:
 Để tạo dựng được bảng Cohort ta cần có cái nhìn tổng quan về kết quả mình muốn tạo ra. Kết quả cuối cùng sẽ có hình dáng giống như hình tam giác bên dưới
 
-Chúng ta cần tính toán số lượng khách hàng mua lần đầu tại từng tháng, sau mỗi tháng còn lại bao nhiêu khách hàng vẫn còn mua hàng. Cách làm chi tiết được viết tại đây: 
+<img src="https://github.com/user-attachments/assets/2a128a04-d198-4238-8322-9f2489d8b6d3" alt="..." width="800" /> 
+
+Chúng ta cần tính toán số lượng khách hàng mua lần đầu tại từng tháng, sau mỗi tháng còn lại bao nhiêu khách hàng vẫn còn mua hàng. Cách làm chi tiết được viết tại đây: ( )
 
 
 
