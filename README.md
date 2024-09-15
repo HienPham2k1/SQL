@@ -50,15 +50,16 @@ Q5: Retention rate of Customer in 2014 with status of Successfully Shipped (Coho
 Q6: Trend of Stock level & MoM diff % by all product in 2011. If %gr rate is null then 0. Round to 1 decimal
 
 Q7: Calc Ratio of Stock / Sales in 2011 by product name, by month. Order results by month desc, ratio desc. Round Ratio to 1 decimal mom yoy
+
 Q8: No of order and value at Pending status in 2014
 ## Mục đích thực hiện:
 Tính toán được tổng số lượng sản phẩm, tổng doanh thu cũng như tổng số lượng đặt hàng theo từng Sub Category. Ranking top 3 các sản phẩm có lượng Order cao trong năm. Thống kê được sự tăng trưởng của các Sub Category qua từng năm. Tạo lập được bảng biểu thị sự tăng trưởng Retention Rate của khách hàng trong từng thời kỳ
 ## Retention Rate:
-Để tạo dựng được bảng Cohort ta cần có cái nhìn tổng quan về kết quả mình muốn tạo ra. Kết quả cuối cùng sẽ có hình dáng giống như hình tam giác bên dưới
+Để tạo dựng được bảng Cohort từ câu số 5 ta cần có cái nhìn tổng quan về kết quả mình muốn tạo ra. Kết quả cuối cùng sẽ có hình dáng giống như hình tam giác bên dưới
 
 <img src="https://github.com/user-attachments/assets/2a128a04-d198-4238-8322-9f2489d8b6d3" alt="..." width="800" /> 
 
-Chúng ta cần tính toán số lượng khách hàng mua lần đầu tại từng tháng, sau mỗi tháng còn lại bao nhiêu khách hàng vẫn còn mua hàng. Cách làm chi tiết được viết tại đây: [Query5](https://github.com/HienPham2k1/SQL/blob/main/Bicycle%20Manufacture.sql)
+Chúng ta cần tính toán số lượng khách hàng mua lần đầu tại từng tháng, sau mỗi tháng còn lại bao nhiêu khách hàng vẫn còn mua hàng. Cách làm chi tiết được viết tại đây: [Bicycle Manufacture](https://github.com/HienPham2k1/SQL/blob/main/Bicycle%20Manufacture.sql)
 
 
 
