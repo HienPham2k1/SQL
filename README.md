@@ -1,5 +1,6 @@
 # Ecommerce Dataset
-## Explore the dataset
+## Explore the dataset 
+Để có thể hiểu hơn về các câu lệnh querry bên dưới, ta có thể xem xét cấu trúc ban đầu của tập dữ liệu. 
 Cách thức thực hiện:
 1.	Gọi dữ liệu từ nhóm dữ liệu của  Google Analysis 
 2.	Sử dụng Unnest để phân tách dữ liệu 
