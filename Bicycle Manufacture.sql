@@ -1,19 +1,4 @@
---q1
-SELECT distinct  --k cần select distinct ở đây
-      FORMAT_DATETIME('%b %Y',a.ModifiedDate) AS period,
-      c.Name,
-      SUM(a.OrderQty) AS item_cnt,
-      SUM(a.LineTotal) AS sale_values,
-      COUNT(DISTINCT a.SalesOrderID) AS order_cnt
-FROM `adventureworks2019.Sales.SalesOrderDetail` a
-JOIN `adventureworks2019.Production.Product` b 
-ON a.ProductID=b.ProductID
-JOIN `adventureworks2019.Production.ProductSubcategory` c 
-ON CAST(b.ProductSubcategoryID AS int)=c.ProductSubcategoryID
-GROUP BY FORMAT_DATETIME('%b %Y',a.ModifiedDate),c.Name
-ORDER BY period;
---thiếu ràng điều kiện lấy last 12 Month
--->
+--Q1.Calc Quantity of items, Sales value & Order quantity by each Subcategory in Last 12 months
 select format_datetime('%b %Y', a.ModifiedDate) month
       ,c.Name
       ,sum(a.OrderQty) qty_item
@@ -25,34 +10,11 @@ left join `adventureworks2019.Production.Product` b
 left join `adventureworks2019.Production.ProductSubcategory` c
   on b.ProductSubcategoryID = cast(c.ProductSubcategoryID as string)
 where date(a.ModifiedDate) between   (date_sub(date(a.ModifiedDate), INTERVAL 12 month)) and '2014-06-30'
- --where date(a.ModifiedDate) >= (select date_sub(max(date(a.ModifiedDate)), INTERVAL 12 month) FROM `adventureworks2019.Sales.SalesOrderDetail`)
 group by 1,2
 order by 2,1;
 
 
---q2
-WITH raw AS(
-  SELECT distinct c.Name,EXTRACT(YEAR FROM a.ModifiedDate) AS year,SUM(OrderQty) AS qty_item
-  FROM `adventureworks2019.Sales.SalesOrderDetail` a
-  JOIN `adventureworks2019.Production.Product` b 
-  ON a.ProductID=b.ProductID
-  JOIN `adventureworks2019.Production.ProductSubcategory` c 
-  ON CAST(b.ProductSubcategoryID AS int)=c.ProductSubcategoryID
-  GROUP BY c.Name,EXTRACT(YEAR FROM a.ModifiedDate)),
-raw2 AS(
-  SELECT *,LAG(qty_item)OVER(PARTITION BY Name ORDER BY year ) as prev_item_cnt
-  FROM raw )
-SELECT Name,qty_item,prev_item_cnt
-  ,ROUND((qty_item-prev_item_cnt)*1.00/prev_item_cnt,2) AS qty_diff
-FROM raw2
-ORDER BY qty_diff DESC
-LIMIT 3;
-
---cách trình bày ở trên nó dính lại nên khó nhìn
---ở giữa các cte mình nên cách ra, câu main query cũng cần cách ra
--->bài yêu cầu mình lấy top 3 thì mình bên dense rank, để make sure là lấy đủ top 3
---còn limit nó chỉ giới hạn output thoi, trong trường hợp có nhiều số đồng hạng thì mình sẽ lấy thiếu data
-
+--Q2.Calc % YoY growth rate by SubCategory & release top 3 cat with highest grow rate. Can use metric: quantity_item. Round results to 2 decimal
 with 
 sale_info as (
   SELECT 
@@ -80,6 +42,7 @@ rk_qty_diff as (
   select *
       ,dense_rank() over( order by qty_diff desc) dk
   from sale_diff
+  order by dk DESC
 )
 
 select distinct Name
@@ -87,12 +50,10 @@ select distinct Name
       , prv_qty
       , qty_diff
 from rk_qty_diff 
-where dk <=3
-order by dk ;
+where dk <=3;
 
+--Q3.Ranking Top 3 TeritoryID with biggest Order quantity of every year. If there's TerritoryID with same quantity in a year, do not skip the rank number
 
-
---q3
 WITH raw AS(
   SELECT FORMAT_DATETIME('%Y',c.ModifiedDate) AS period
     ,a.TerritoryID
@@ -113,7 +74,7 @@ total AS(
 SELECT *
 FROM total
 WHERE rk IN (1,2,3);
---correct
+
 
 --q4
 WITH price AS(
