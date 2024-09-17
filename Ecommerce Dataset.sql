@@ -1,5 +1,5 @@
 --The Dataset is divided into disks, so when you want to get data, you have to call its dicks location.
-## Q1.Calculate total visit, pageview, transaction for Jan, Feb and March 2017 (order by month)
+--Q1.Calculate total visit, pageview, transaction for Jan, Feb and March 2017 (order by month)
 --we've just using CTE depend on the logic to collect data
 SELECT
   format_date("%Y%m", parse_date("%Y%m%d", date)) as month,
