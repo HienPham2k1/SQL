@@ -1,36 +1,6 @@
 --The Dataset is divided into disks, so when you want to get data, you have to call its dicks location.
---P1.Calculate total visit, pageview, transaction for Jan, Feb and March 2017 (order by month)
-
-WITH raw AS(
-  SELECT PARSE_DATETIME('%Y%m%d',date) AS datetime_column, totals.visits,totals.pageviews,totals.transactions
-  FROM `bigquery-public-data.google_analytics_sample.ga_sessions_2017*`),
-months1 AS(
-  SELECT FORMAT_DATE('%Y%m',datetime_column) AS months,SUM(visits),SUM(pageviews),SUM(transactions)
-  FROM raw
-  WHERE EXTRACT(MONTH FROM datetime_column)=1
-  GROUP BY FORMAT_DATE('%Y%m',datetime_column)),
-months2 AS(
-  SELECT FORMAT_DATE('%Y%m',datetime_column) AS months,SUM(visits),SUM(pageviews),SUM(transactions)
-  FROM raw
-  WHERE EXTRACT(MONTH FROM datetime_column)=2
-  GROUP BY FORMAT_DATE('%Y%m',datetime_column)),
-months3 AS(
-  SELECT FORMAT_DATE('%Y%m',datetime_column) AS months,SUM(visits),SUM(pageviews),SUM(transactions)
-  FROM raw
-  WHERE EXTRACT(MONTH FROM datetime_column)=3
-  GROUP BY FORMAT_DATE('%Y%m',datetime_column))
-SELECT *
-FROM months1
-UNION ALL
-SELECT *
-FROM months2
-UNION ALL
-SELECT*
-FROM months3
-ORDER BY months;
-
---mình chỉ tách ra thành các CTE dựa trên sự khác biệt về logic lấy data chứ k tách theo month như vậy
---nếu yêu cầu 12 month mà mình tách làm 12 cte thì dài lắm
+--Q1.Calculate total visit, pageview, transaction for Jan, Feb and March 2017 (order by month)
+--we've just using CTE depend on the logic to collect data
 SELECT
   format_date("%Y%m", parse_date("%Y%m%d", date)) as month,
   SUM(totals.visits) AS visits,
@@ -41,19 +11,9 @@ WHERE _TABLE_SUFFIX BETWEEN '0101' AND '0331'
 GROUP BY 1
 ORDER BY 1;
 
---sử dụng aggregate function, mình sum theo từng month, thì kế quả ra nó sẽ group lại theo từng month
 
---q2
-WITH raw AS(
-  SELECT trafficSource.source,SUM(totals.visits) AS total_visits,SUM(totals.bounces) AS total_no_of_bounces
-  FROM `bigquery-public-data.google_analytics_sample.ga_sessions_201707*` 
-  GROUP BY trafficSource.source
-  ORDER BY total_visits DESC)
-SELECT *,ROUND((raw.total_no_of_bounces*100.00/raw.total_visits),3) AS bounce_rate
-FROM raw;
 
---main query và cte nên tách ra, chứ k sẽ rất khó nhìn
--->
+--Q2.Bounce rate per traffic source in July 2017 (Bounce_rate = num_bounce/total_visit) (order by total_visit DESC)
 SELECT
     trafficSource.source as source,
     sum(totals.visits) as total_visits,
@@ -64,21 +24,22 @@ GROUP BY source
 ORDER BY total_visits DESC;
 
 
---q3
+--Q3.Revenue by traffic source by week, by month in June 2017
 WITH raw AS(
-      SELECT trafficSource.source,product.productRevenue,PARSE_DATETIME('%Y%m%d',date) AS datetime_column
+    SELECT trafficSource.source,product.productRevenue,PARSE_DATETIME('%Y%m%d',date) AS datetime_column
     FROM `bigquery-public-data.google_analytics_sample.ga_sessions_201706*`,
-    UNNEST (hits) hits,
-    UNNEST (hits.product) product 
+      UNNEST (hits) hits,
+      UNNEST (hits.product) product 
     WHERE product.productRevenue is not null),
 jun AS(
     SELECT 'Month' as time_type,
-    FORMAT_DATE('%Y%m',datetime_column) AS time,source,ROUND(SUM(productRevenue)/1000000,4) AS revenue
+      FORMAT_DATE('%Y%m',datetime_column) AS time,source,
+      ROUND(SUM(productRevenue)/1000000,4) AS revenue
     FROM raw
     GROUP BY time_type,FORMAT_DATE('%Y%m',datetime_column),source),
 week AS(
     SELECT 'Week' as time_type,
-    FORMAT_DATE('%Y%V',datetime_column) AS time,source,ROUND(SUM(productRevenue)/1000000,4) AS revenue
+      FORMAT_DATE('%Y%V',datetime_column) AS time,source,ROUND(SUM(productRevenue)/1000000,4) AS revenue
     FROM raw
     GROUP BY time_type,FORMAT_DATE('%Y%V',datetime_column),source) 
 SELECT *
@@ -88,7 +49,7 @@ SELECT*
 FROM week
 ORDER BY source;
 
--->
+-->  If we set order by time_type, month and week will separate
 with 
 month_data as(
   SELECT
@@ -121,41 +82,9 @@ week_data as(
 select * from month_data
 union all
 select * from week_data;
---nên order by time_type, để month vs week đc xếp thành các cụm riêng biệt
 
---q4
-WITH raw AS(
-    SELECT totals.pageviews,fullVisitorId,totals.transactions,
-    PARSE_DATETIME('%Y%m%d',date) AS datetime_column,product.productRevenue
-    FROM `bigquery-public-data.google_analytics_sample.ga_sessions_2017*`, 
-    UNNEST (hits) hits,
-    UNNEST (hits.product) product)
-SELECT FORMAT_DATE('%Y%m',datetime_column) AS time,
-      (SELECT SUM(pageviews)/COUNT( DISTINCT fullVisitorId) 
-      FROM raw
-      WHERE productRevenue is not null AND EXTRACT(MONTH FROM datetime_column)=6)AS avg_pageviews_purchase,
-      (SELECT SUM(pageviews)/COUNT( DISTINCT fullVisitorId) 
-      FROM raw
-      WHERE transactions is null AND EXTRACT(MONTH FROM datetime_column)=6) AS avg_pageviews_non_purchase
-FROM raw
-WHERE EXTRACT(MONTH FROM datetime_column)=6
-GROUP BY FORMAT_DATE('%Y%m',datetime_column)
-UNION ALL
-SELECT FORMAT_DATE('%Y%m',datetime_column) AS time,
-      (SELECT SUM(pageviews)/COUNT( DISTINCT fullVisitorId) 
-      FROM raw
-      WHERE productRevenue is not null AND EXTRACT(MONTH FROM datetime_column)=7)AS avg_pageviews_purchase,
-      (SELECT SUM(pageviews)/COUNT( DISTINCT fullVisitorId) 
-      FROM raw
-      WHERE transactions is null AND EXTRACT(MONTH FROM datetime_column)=7) AS avg_pageviews_non_purchase
-FROM raw
-WHERE EXTRACT(MONTH FROM datetime_column)=7
-GROUP BY FORMAT_DATE('%Y%m',datetime_column)
-ORDER BY time;
 
---câu 4 này ghi khó nhìn qué, nhìn vào k biết từng cụm đang lấy data gì
---ng đọc sẽ pass qua luôn
-
+--Q4.Average number of pageviews by purchaser type (purchasers vs non-purchasers) in June, July 2017.
 with 
 purchaser_data as(
   select
@@ -190,68 +119,34 @@ from purchaser_data pd
 full join non_purchaser_data using(month)
 order by pd.month;
 
---câu 4 này lưu ý là mình nên dùng full join, bởi vì trong câu này, phạm vi chỉ từ tháng 6-7, nên chắc chắc sẽ có pur và nonpur của cả 2 tháng
---mình inner join thì vô tình nó sẽ ra đúng. nhưng nếu đề bài là 1 khoảng thời gian dài hơn, 2-3 năm chẳng hạn, nó cũng tháng chỉ có nonpur mà k có pur
---thì khi đó inner join nó sẽ làm mình bị mất data, thay vì hiện số của nonpur và pur thì nó để trống
-
-
-
---q5
+--Q5.Average number of transactions per user that made a purchase in July 2017
 WITH raw AS(
     SELECT fullVisitorId,totals.transactions,
-        PARSE_DATETIME('%Y%m%d',date) AS datetime_column,product.productRevenue 
+           PARSE_DATETIME('%Y%m%d',date) AS datetime_column,product.productRevenue 
     FROM `bigquery-public-data.google_analytics_sample.ga_sessions_201707*`,
-    UNNEST (hits) hits,
-    UNNEST (hits.product) product 
+        UNNEST (hits) hits,
+        UNNEST (hits.product) product 
     WHERE product.productRevenue is not null )
 
-SELECT FORMAT_DATE('%Y%m',datetime_column) AS time, --mình có thể xử lý month từ phía trên luôn
-      SUM(transactions)/COUNT(DISTINCT fullVisitorId) AS Avg_total_transactions_per_user
+SELECT FORMAT_DATE('%Y%m',datetime_column) AS time, 
+       SUM(transactions)/COUNT(DISTINCT fullVisitorId) AS Avg_total_transactions_per_user
 FROM raw
-GROUP BY 1;-- ghi by 1 hoặc time cho ngắn gọn
+GROUP BY 1;
 
---feedback cho câu5&6, giữa cte và main query nên ghi cách ra
--->
-select
-    format_date("%Y%m",parse_date("%Y%m%d",date)) as month,
-    sum(totals.transactions)/count(distinct fullvisitorid) as Avg_total_transactions_per_user
-from `bigquery-public-data.google_analytics_sample.ga_sessions_201707*`
-    ,unnest (hits) hits,
-    unnest(product) product
-where  totals.transactions>=1
-and product.productRevenue is not null
-group by month;
-
-
---q6
-WITH raw AS(
-  SELECT totals.visits,
-        PARSE_DATETIME('%Y%m%d',date) AS datetime_column,product.productRevenue 
-    FROM `bigquery-public-data.google_analytics_sample.ga_sessions_201707*`,
-    UNNEST (hits) hits,
-    UNNEST (hits.product) product 
-    WHERE product.productRevenue is not null 
-        AND totals.transactions IS NOT NULL 
-        AND totals.visits IS NOT NULL)
-
-SELECT FORMAT_DATE('%Y%m',datetime_column) AS time,
-      SUM(productRevenue)/COUNT(visits)/1000000 AS avg_revenue_by_user_per_visit
-FROM raw
-GROUP BY FORMAT_DATE('%Y%m',datetime_column);
-
--->
-select
+--Q6. Average amount of money spent per session. Only include purchaser data in July 2017 (HINT:avg_spend_per_session = total revenue/ total visit)
+Select
     format_date("%Y%m",parse_date("%Y%m%d",date)) as month,
     ((sum(product.productRevenue)/sum(totals.visits))/power(10,6)) as avg_revenue_by_user_per_visit
-from `bigquery-public-data.google_analytics_sample.ga_sessions_201707*`
+From `bigquery-public-data.google_analytics_sample.ga_sessions_201707*`
   ,unnest(hits) hits
   ,unnest(product) product
-where product.productRevenue is not null
-and totals.transactions>=1
-group by month;
+Where product.productRevenue is not null
+      and totals.transactions>=1
+Group by month;
 
 
---q7
+--Q7.Other products purchased by customers who purchased product "YouTube Men's Vintage Henley" in July 2017. 
+--Output should show product name and the quantity was ordered.
 WITH list AS(
       SELECT DISTINCT fullVisitorId,
     FROM `bigquery-public-data.google_analytics_sample.ga_sessions_201707*`,
@@ -275,81 +170,12 @@ ON l.fullVisitorId=o.fullVisitorId
 GROUP BY o.v2ProductName
 ORDER BY quantity DESC;
 
---đây là cách ghi của mình
--->
-with buyer_list as(
-    SELECT
-        distinct fullVisitorId
-    FROM `bigquery-public-data.google_analytics_sample.ga_sessions_201707*`
-    , UNNEST(hits) AS hits
-    , UNNEST(hits.product) as product
-    WHERE product.v2ProductName = "YouTube Men's Vintage Henley"
-    AND totals.transactions>=1
-    AND product.productRevenue is not null
-)
+--Q8.Calculate cohort map from product view to addtocart to purchase in Jan, Feb and March 2017. 
+--For example, 100% product view then 40% add_to_cart and 10% purchase.
+--Add_to_cart_rate = number product  add to cart/number product view. 
+--Purchase_rate = number product purchase/number product view. The output should be calculated in product level.
 
-SELECT
-  product.v2ProductName AS other_purchased_products,
-  SUM(product.productQuantity) AS quantity
-FROM `bigquery-public-data.google_analytics_sample.ga_sessions_201707*`
-, UNNEST(hits) AS hits
-, UNNEST(hits.product) as product
-JOIN buyer_list using(fullVisitorId)
-WHERE product.v2ProductName != "YouTube Men's Vintage Henley"
- and product.productRevenue is not null
-GROUP BY other_purchased_products
-ORDER BY quantity DESC;
-
-
---q8
-WITH raw AS(
-   SELECT fullVisitorId,eCommerceAction.action_type,product.productRevenue,
-        PARSE_DATETIME('%Y%m%d',date) AS datetime_column
-    FROM `bigquery-public-data.google_analytics_sample.ga_sessions_2017*`,
-    UNNEST (hits) hits,
-    UNNEST (hits.product) product),
-view AS(
-    SELECT FORMAT_DATE('%Y%m',datetime_column) AS time,COUNT(fullVisitorId)AS num_product_view
-    FROM raw
-    WHERE (EXTRACT(MONTH FROM datetime_column)=1 AND action_type = '2') 
-    OR(EXTRACT(MONTH FROM datetime_column)=2 AND action_type = '2')
-    OR(EXTRACT(MONTH FROM datetime_column)=3 AND action_type = '2') 
-    GROUP BY FORMAT_DATE('%Y%m',datetime_column)),
-addtocard AS(
-    SELECT FORMAT_DATE('%Y%m',datetime_column) AS time,COUNT(fullVisitorId)AS num_addtocart
-    FROM raw
-    WHERE (EXTRACT(MONTH FROM datetime_column)=1 AND action_type = '3') 
-    OR(EXTRACT(MONTH FROM datetime_column)=2 AND action_type = '3')
-    OR(EXTRACT(MONTH FROM datetime_column)=3 AND action_type = '3') 
-    GROUP BY FORMAT_DATE('%Y%m',datetime_column)),
-purchase AS(
-    SELECT FORMAT_DATE('%Y%m',datetime_column) AS time,COUNT(fullVisitorId)AS num_purchase
-    FROM raw
-    WHERE (EXTRACT(MONTH FROM datetime_column)=1 AND action_type = '6'AND productRevenue is not null) 
-    OR(EXTRACT(MONTH FROM datetime_column)=2 AND action_type = '6'AND productRevenue is not null)
-    OR(EXTRACT(MONTH FROM datetime_column)=3 AND action_type = '6'AND productRevenue is not null) 
-    GROUP BY FORMAT_DATE('%Y%m',datetime_column)),
-
---feedback chung: giữa các ghi nên cte nên cách ra, mình có thể dùng table_suffix để filter thời gian
---thay vì phải ghi lặp đi lặp lại như trên, mà ghi logic như vậy cũng hơi dài
-
-total AS(
-    SELECT v.*,a.num_addtocart,p.num_purchase
-    FROM view AS v
-    JOIN addtocard AS a
-    ON v.time=a.time
-    JOIN purchase AS p
-    ON p.time=v.time)
-SELECT*,
-    ROUND((num_addtocart*100.00/num_product_view),2) AS add_to_cart_rate,
-    ROUND((num_purchase*100.00/num_product_view),2) AS purchase_rate
-FROM total;
-
--->
---bài yêu cầu tính số sản phầm, mình nên count productName hay productSKU thì sẽ hợp lý hơn là count action_type
---k nên xài inner join, nếu table1 có 10 record,table2 có 5 record,table3 có 1 record, thì sau khi inner join, output chỉ ra 1 record
-
---Cách 1:dùng CTE
+--Cách 1: Using CTE
 with
 product_view as(
   SELECT
@@ -399,10 +225,7 @@ left join add_to_cart a on pv.month = a.month
 left join purchase p on pv.month = p.month
 order by pv.month;
 
---bài này k nên inner join, vì nếu như bảng purchase k có data thì sẽ k mapping đc vs bảng productview, từ đó kết quả sẽ k có luôn, mình nên dùng left join
---lấy số product_view làm gốc, nên mình sẽ left join ra 2 bảng còn lại
-
---Cách 2: bài này mình có thể dùng count(case when) hoặc sum(case when)
+--Cách 2: Using count(case when) OR sum(case when)
 
 with product_data as(
 select
@@ -427,4 +250,4 @@ from product_data;
 
 
 
-                                                            ---good---
+                                                            
